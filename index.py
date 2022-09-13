@@ -12,6 +12,8 @@ root.geometry("1200x660")
 global open_status_name
 open_status_name = False
 
+global selected
+selected = False
 #Create main frame
 my_frame = Frame(root)
 my_frame.pack(pady=5)
@@ -98,6 +100,30 @@ def save_file():
 	else:
 		save_as_file()
 
+#Cut text
+def cut_text(e):
+	global selected
+	if my_text.selection_get():
+		#grab selected text from text box
+		selected = my_text.selection_get()
+		#delete selected text from text box
+		my_score.delete("sel.first", "sel.last") #grabs whatever is first and last highlighted and everything in between those
+
+#Cut text
+def copy_text(e):
+	global selected
+	if my_text.selection_get():
+		#grab selected text from text box
+		selected = my_text.selection_get()
+
+#Cut text
+def paste_text(e):
+	if selected:
+		position = my_text.index(INSERT)
+		my_text.insert(position, selected)
+
+#Forgoing keyboard bindings for the above functions, works without them. Part 4 went over key bindings, I want to add different ones to learn. 
+
 #add file menu
 file_menu = Menu(my_menu, tearoff=False)
 my_menu.add_cascade(label="File", menu=file_menu)
@@ -111,9 +137,9 @@ file_menu.add_command(label="Exit", command=root.quit)
 #add edit menu
 edit_menu = Menu(my_menu, tearoff=False)
 my_menu.add_cascade(label="Edit", menu=edit_menu)
-edit_menu.add_command(label="Cut")
-edit_menu.add_command(label="Copy")
-edit_menu.add_command(label="Paste")
+edit_menu.add_command(label="Cut", command=lambda: cut_text(False)) #False because we have to pass something
+edit_menu.add_command(label="Copy", command=lambda: copy_text(False))
+edit_menu.add_command(label="Paste", command=lambda: paste_text(False))
 edit_menu.add_command(label="Undo")
 edit_menu.add_command(label="Redo")
 
