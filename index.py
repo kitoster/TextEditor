@@ -6,14 +6,18 @@ root = Tk()
 root.title('TextPad')
 root.geometry("1200x660")
 
-# starting with this video https://www.youtube.com/watch?v=rUgAC_Ssflw&t=2s&ab_channel=Codemy.com
-
 #set variable for open file name
 global open_status_name
 open_status_name = False
 
 global selected
 selected = False
+
+#Create a toolbar frame
+toolbar_frame = Frame(root)
+toolbar_frame.pack(fill=X)
+
+
 #Create main frame
 my_frame = Frame(root)
 my_frame.pack(pady=5)
@@ -26,7 +30,7 @@ text_scroll.pack(side=RIGHT, fill=Y)
 my_text = Text(my_frame, width=97, height=25, font=("Helvetica", 16), selectbackground="yellow", selectforeground="black", undo=True, yscrollcommand=text_scroll.set)
 my_text.pack()
 
-#Configure our scrollbar
+#Configure scrollbar
 text_scroll.config(command=my_text.yview)
 
 #Create menu
@@ -122,6 +126,42 @@ def paste_text(e):
 		position = my_text.index(INSERT)
 		my_text.insert(position, selected)
 
+#Bold Text
+def bold_it():
+	#Create font
+	bold_font = font.Font(my_text, my_text.cget("font"))
+	bold_font.configure(weight="bold")
+
+	#Configure tag
+	my_text.tag_configure("bold", font=bold_font)
+
+	#Define current tags
+	current_tags = my_text.tag_names("sel.first")
+
+	#If statement to see if tag has been set
+	if "bold" in current_tags:
+		my_text.tag_remove("bold", "sel.first", "sel.last")
+	else:
+		my_text.tag_add("bold", "sel.first", "sel.last")
+
+#Italics Test
+def italics_it():
+	#Create font
+	italics_font = font.Font(my_text, my_text.cget("font"))
+	italics_font.configure(slant="italic")
+
+	#Configure tag
+	my_text.tag_configure("italic", font=italics_font)
+
+	#Define current tags
+	current_tags = my_text.tag_names("sel.first")
+
+	#If statement to see if tag has been set
+	if "italic" in current_tags:
+		my_text.tag_remove("italic", "sel.first", "sel.last")
+	else:
+		my_text.tag_add("italic", "sel.first", "sel.last")
+
 #Forgoing keyboard bindings for the above functions, works without them. Part 4 went over key bindings, I want to add different ones to learn. 
 
 #add file menu
@@ -140,12 +180,31 @@ my_menu.add_cascade(label="Edit", menu=edit_menu)
 edit_menu.add_command(label="Cut", command=lambda: cut_text(False)) #False because we have to pass something
 edit_menu.add_command(label="Copy", command=lambda: copy_text(False))
 edit_menu.add_command(label="Paste", command=lambda: paste_text(False))
-edit_menu.add_command(label="Undo")
-edit_menu.add_command(label="Redo")
+edit_menu.add_command(label="Undo", command=my_text.edit_undo, accelerator="(Ctrl+z)") #no binding needed
+edit_menu.add_command(label="Redo", command=my_text.edit_redo, accelerator="(Ctrl+y)")
 
 #add status bar to bottom of app
 status_bar = Label(root, text='Ready        ', anchor=E)
 status_bar.pack(fill=X, side=BOTTOM, ipady=5)
+
+#Set font of bold button
+f = font.Font(weight="bold")
+
+#Bold Button
+bold_button = Button(toolbar_frame, text="B", command=bold_it)
+bold_button['font'] = f
+bold_button.grid(row=0, column=0, sticky=W, padx=5)
+
+#Italics Button
+italics_button = Button(toolbar_frame, text="I", command=italics_it)
+italics_button.grid(row=0, column=1, padx=5)
+
+#Undo/Redo Buttons
+undo_button = Button(toolbar_frame, text="Undo", command=my_text.edit_undo)
+undo_button.grid(row=0, column=2, padx=5)
+
+redo_button = Button(toolbar_frame, text="Redo", command=my_text.edit_redo)
+redo_button.grid(row=0, column=3, padx=5)
 
 #Create event loop.
 root.mainloop()
