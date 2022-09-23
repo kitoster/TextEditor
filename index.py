@@ -60,7 +60,6 @@ def open_file():
 		global open_status_name
 		open_status_name = text_file
 
-
 	#update status bars
 	name = text_file
 	status_bar.config(text=f'{name}        ')
@@ -128,39 +127,50 @@ def paste_text(e):
 
 #Bold Text
 def bold_it():
-	#Create font
-	bold_font = font.Font(my_text, my_text.cget("font"))
-	bold_font.configure(weight="bold")
+	#check if text is selected
+	if my_text.tag_ranges("sel"):
+		#Create font
+		bold_font = font.Font(my_text, my_text.cget("font"))
+		bold_font.configure(weight="bold")
 
-	#Configure tag
-	my_text.tag_configure("bold", font=bold_font)
+		#Configure tag
+		my_text.tag_configure("bold", font=bold_font)
 
-	#Define current tags
-	current_tags = my_text.tag_names("sel.first")
+		#Define current tags
+		current_tags = my_text.tag_names("sel.first")
 
-	#If statement to see if tag has been set
-	if "bold" in current_tags:
-		my_text.tag_remove("bold", "sel.first", "sel.last")
+		#If statement to see if tag has been set
+		#trying to add a try/catch because it throws an error when no bold text is selected
+			
+		if "bold" in current_tags:
+			my_text.tag_remove("bold", "sel.first", "sel.last")
+		else:
+			my_text.tag_add("bold", "sel.first", "sel.last")
 	else:
-		my_text.tag_add("bold", "sel.first", "sel.last")
+		print("there is no selected text")
+
 
 #Italics Test
 def italics_it():
-	#Create font
-	italics_font = font.Font(my_text, my_text.cget("font"))
-	italics_font.configure(slant="italic")
+	#check if text is selected
+	if my_text.tag_ranges("sel"):
+		#Create font
+		italics_font = font.Font(my_text, my_text.cget("font"))
+		italics_font.configure(slant="italic")
 
-	#Configure tag
-	my_text.tag_configure("italic", font=italics_font)
+		#Configure tag
+		my_text.tag_configure("italic", font=italics_font)
 
-	#Define current tags
-	current_tags = my_text.tag_names("sel.first")
+		#Define current tags
+		current_tags = my_text.tag_names("sel.first")
 
-	#If statement to see if tag has been set
-	if "italic" in current_tags:
-		my_text.tag_remove("italic", "sel.first", "sel.last")
+		#If statement to see if tag has been set
+		if "italic" in current_tags:
+			my_text.tag_remove("italic", "sel.first", "sel.last")
+		else:
+			my_text.tag_add("italic", "sel.first", "sel.last")
 	else:
-		my_text.tag_add("italic", "sel.first", "sel.last")
+		print("there is no selected text")
 
 #Forgoing keyboard bindings for the above functions, works without them. Part 4 went over key bindings, I want to add different ones to learn. 
 
@@ -187,16 +197,18 @@ edit_menu.add_command(label="Redo", command=my_text.edit_redo, accelerator="(Ctr
 status_bar = Label(root, text='Ready        ', anchor=E)
 status_bar.pack(fill=X, side=BOTTOM, ipady=5)
 
-#Set font of bold button
-f = font.Font(weight="bold")
+#Set font and size of bold button
+bold_f = font.Font(weight="bold", size=8)
+italics_f = font.Font(slant="italic", size=8)
 
 #Bold Button
-bold_button = Button(toolbar_frame, text="B", command=bold_it)
-bold_button['font'] = f
+bold_button = Button(toolbar_frame, text="B", height=1, width=1, command=bold_it)
+bold_button['font'] = bold_f
 bold_button.grid(row=0, column=0, sticky=W, padx=5)
 
 #Italics Button
-italics_button = Button(toolbar_frame, text="I", command=italics_it)
+italics_button = Button(toolbar_frame, text="I", width=2, command=italics_it)
+italics_button['font'] = italics_f
 italics_button.grid(row=0, column=1, padx=5)
 
 #Undo/Redo Buttons
